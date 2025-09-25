@@ -91,49 +91,48 @@ function logoutUser(req, res) {
 }
 
 async function registerFoodPartner(req, res) {
-  const { name, email, password, phone, address, contactName } = req.body;
 
-  const isAccountAlreadyExists = await foodPartnerModel.findOne({
-    email,
-  });
+    const { name, email, password, phone, address, contactName } = req.body;
 
-  if (isAccountAlreadyExists) {
-    return res.status(400).json({
-      message: "Food partner account already exists",
-    });
-  }
+    const isAccountAlreadyExists = await foodPartnerModel.findOne({
+        email
+    })
 
-  const hashedPassword = await bcrypt.hash(password, 10);
+    if (isAccountAlreadyExists) {
+        return res.status(400).json({
+            message: "Food partner account already exists"
+        })
+    }
 
-  const foodPartner = await foodPartnerModel.create({
-    name,
-    email,
-    password: hashedPassword,
-    phone,
-    address,
-    contactName,
-  });
+    const hashedPassword = await bcrypt.hash(password, 10);
 
-  const token = jwt.sign(
-    {
-      id: foodPartner._id,
-    },
-    process.env.JWT_SECRET
-  );
+    const foodPartner = await foodPartnerModel.create({
+        name,
+        email,
+        password: hashedPassword,
+        phone,
+        address,
+        contactName
+    })
 
-  res.cookie("token", token);
+    const token = jwt.sign({
+        id: foodPartner._id,
+    }, process.env.JWT_SECRET)
 
-  res.status(201).json({
-    message: "Food partner registered successfully",
-    foodPartner: {
-      _id: foodPartner._id,
-      email: foodPartner.email,
-      name: foodPartner.name,
-      address: foodPartner.address,
-      contactName: foodPartner.contactName,
-      phone: foodPartner.phone,
-    },
-  });
+    res.cookie("token", token)
+
+    res.status(201).json({
+        message: "Food partner registered successfully",
+        foodPartner: {
+            _id: foodPartner._id,
+            email: foodPartner.email,
+            name: foodPartner.name,
+            address: foodPartner.address,
+            contactName: foodPartner.contactName,
+            phone: foodPartner.phone
+        }
+    })
+
 }
 
 async function loginFoodPartner(req, res) {

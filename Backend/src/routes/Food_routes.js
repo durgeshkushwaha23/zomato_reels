@@ -17,7 +17,7 @@ router.post(
 );
 
 //get method /api/food[protected]
-router.get("/",authmiddleware.authUserMiddleware)
+router.get("/",authmiddleware.authUserMiddleware,foodController.getFoodItems)
 
 
 
