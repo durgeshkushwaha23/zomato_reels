@@ -3,10 +3,14 @@ const cookieparser = require("cookie-parser")
 const authRoutes = require("./routes/auth_routes")
 const foodRouters = require("./routes/Food_routes")
 const app = express();
-
+const cors = require("cors")
 app.use(cookieparser());
 app.use(express.json());
 
+app.use(cors({
+    origin:"http://localhost:5173",
+    credentials:true
+}))
 
 app.get("/",(req,res)=>{
     res.send("hello world")
