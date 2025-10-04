@@ -1,8 +1,21 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import Axios from '../../axios/Axios';
 import { Link } from 'react-router-dom';
 import '../../styles/auth-shared.css';
 
 const FoodPartnerRegister = () => {
+  const [form, setForm] = useState({
+    name: '',
+    contactName: '',
+    phone: '',
+    email: '',
+    password: '',
+    address: ''
+  });
+  const [error, setError] = useState(null);
+  const [success, setSuccess] = useState(null);
+  const navigate = useNavigate();
   return (
     <div className="auth-page-wrapper">
       <div className="auth-card" role="region" aria-labelledby="partner-register-title">
@@ -16,14 +29,37 @@ const FoodPartnerRegister = () => {
           <Link to="/user/register">User</Link> • <Link to="/food-partner/register">Food partner</Link>
         </nav>
 
-        <form className="auth-form" noValidate>
+        <form className="auth-form" noValidate onSubmit={async (e) => {
+          e.preventDefault();
+          setError(null);
+          setSuccess(null);
+          try {
+            await Axios.post('/auth/food-partner/register', {
+              name: form.name,
+              contactName: form.contactName,
+              phone: form.phone,
+              email: form.email,
+              password: form.password,
+              address: form.address
+            });
+            setSuccess('Partner registered successfully! Redirecting...');
+            setTimeout(() => {
+              navigate('/create-food');
+            }, 700);
+          } catch (err) {
+            setError(err?.response?.data?.message || 'Registration failed');
+          }
+        }}>
           <div className="field-group">
-            <label htmlFor="businessName">Business Name</label>
+            <label htmlFor="name">Business Name</label>
             <input
-              id="businessName"
-              name="businessName"
+              id="name"
+              name="name"
               placeholder="Tasty Bites"
               autoComplete="organization"
+              value={form.name}
+              onChange={e => setForm(f => ({ ...f, name: e.target.value }))}
+              required
             />
           </div>
 
@@ -35,6 +71,9 @@ const FoodPartnerRegister = () => {
                 name="contactName"
                 placeholder="Jane Doe"
                 autoComplete="name"
+                value={form.contactName}
+                onChange={e => setForm(f => ({ ...f, contactName: e.target.value }))}
+                required
               />
             </div>
             <div className="field-group">
@@ -44,6 +83,9 @@ const FoodPartnerRegister = () => {
                 name="phone"
                 placeholder="+1 555 123 4567"
                 autoComplete="tel"
+                value={form.phone}
+                onChange={e => setForm(f => ({ ...f, phone: e.target.value }))}
+                required
               />
             </div>
           </div>
@@ -56,6 +98,9 @@ const FoodPartnerRegister = () => {
               type="email"
               placeholder="business@example.com"
               autoComplete="email"
+              value={form.email}
+              onChange={e => setForm(f => ({ ...f, email: e.target.value }))}
+              required
             />
           </div>
 
@@ -67,6 +112,9 @@ const FoodPartnerRegister = () => {
               type="password"
               placeholder="Create password"
               autoComplete="new-password"
+              value={form.password}
+              onChange={e => setForm(f => ({ ...f, password: e.target.value }))}
+              required
             />
           </div>
 
@@ -77,11 +125,16 @@ const FoodPartnerRegister = () => {
               name="address"
               placeholder="123 Market Street"
               autoComplete="street-address"
+              value={form.address}
+              onChange={e => setForm(f => ({ ...f, address: e.target.value }))}
+              required
             />
             <p className="small-note">Full address helps customers find you faster.</p>
           </div>
 
           <button className="auth-submit" type="submit">Create Partner Account</button>
+          {error && <div style={{color:'red', marginTop:'8px'}}>{error}</div>}
+          {success && <div style={{color:'green', marginTop:'8px'}}>{success}</div>}
         </form>
 
         <div className="auth-alt-action">

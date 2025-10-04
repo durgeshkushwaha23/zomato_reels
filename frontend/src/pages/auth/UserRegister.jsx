@@ -2,9 +2,10 @@ import React, { useState } from 'react';
 import Axios from '../../axios/Axios';
 import { Link } from 'react-router-dom';
 import '../../styles/auth-shared.css';
-
+import { useNavigate } from 'react-router-dom';
 
 const UserRegister = () => {
+  const naviagate = useNavigate();
   const [form, setForm] = useState({ firstName: '', lastName: '', email: '', password: '' });
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
@@ -33,7 +34,9 @@ const UserRegister = () => {
               password: form.password
             });
             setSuccess('User registered successfully!');
+
             setForm({ firstName: '', lastName: '', email: '', password: '' });
+            naviagate("/")
           } catch (err) {
             setError(err?.response?.data?.message || 'Registration failed');
           }
@@ -45,7 +48,7 @@ const UserRegister = () => {
                 id="firstName" 
                 name="firstName" 
                 placeholder="Jane" 
-                autoComplete="given-name" 
+                autoComplete="given-name"   
                 value={form.firstName}
                 onChange={e => setForm(f => ({ ...f, firstName: e.target.value }))}
                 required
